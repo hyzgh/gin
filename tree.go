@@ -21,6 +21,7 @@ type Param struct {
 // It is therefore safe to read values by the index.
 type Params []Param
 
+// hyz: 时间复杂度O(n)
 // Get returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
 func (ps Params) Get(name string) (string, bool) {
@@ -32,6 +33,7 @@ func (ps Params) Get(name string) (string, bool) {
 	return "", false
 }
 
+// hyz: 感觉这个函数名字起得不好，也有点不太必要
 // ByName returns the value of the first Param which key matches the given name.
 // If no matching Param is found, an empty string is returned.
 func (ps Params) ByName(name string) (va string) {
@@ -46,6 +48,8 @@ type methodTree struct {
 
 type methodTrees []methodTree
 
+// hyz: methodTrees以及Params，都是类似的，把键值对放在结构体里，然后通过O(n)遍历取出
+// 为何不用map?
 func (trees methodTrees) get(method string) *node {
 	for _, tree := range trees {
 		if tree.method == method {
@@ -128,6 +132,7 @@ func (n *node) incrementChildPrio(pos int) int {
 	return newPos
 }
 
+// hyz: 原来大佬也写这么长的函数
 // addRoute adds a node with the given handle to the path.
 // Not concurrency-safe!
 func (n *node) addRoute(path string, handlers HandlersChain) {

@@ -2,6 +2,7 @@
 // Use of this source code is governed by a MIT style
 // license that can be found in the LICENSE file.
 
+// hyz: 通过package关键字，让所有文件共用一个域，公有、私有成员都可以使用
 package gin
 
 import (
@@ -17,6 +18,7 @@ import (
 // BindKey indicates a default bind key.
 const BindKey = "_gin-gonic/gin/bindkey"
 
+// hyz: 学习了一下reflect
 // Bind is a helper function for given interface object and returns a Gin middleware.
 func Bind(val interface{}) HandlerFunc {
 	value := reflect.ValueOf(val)
@@ -49,6 +51,7 @@ func WrapH(h http.Handler) HandlerFunc {
 	}
 }
 
+// hyz: 实现了Marshaler接口
 // H is a shortcut for map[string]interface{}
 type H map[string]interface{}
 
