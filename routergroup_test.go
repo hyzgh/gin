@@ -15,6 +15,7 @@ func init() {
 	SetMode(TestMode)
 }
 
+// hyz: 测试写得不错
 func TestRouterGroupBasic(t *testing.T) {
 	router := New()
 	group := router.Group("/hola", func(c *Context) {})
@@ -118,6 +119,7 @@ func TestRouterGroupTooManyHandlers(t *testing.T) {
 
 	handlers2 := make([]HandlerFunc, 26)
 	assert.Panics(t, func() {
+		// hyz: 最多63个，因此66个会报错
 		router.Use(handlers2...)
 	})
 	assert.Panics(t, func() {
@@ -158,6 +160,7 @@ func TestRouterGroupPipeline(t *testing.T) {
 	testRoutesInterface(t, v1)
 }
 
+// hyz: 测试函数创建子函数时，需要传递testing.T
 func testRoutesInterface(t *testing.T, r IRoutes) {
 	handler := func(c *Context) {}
 	assert.Equal(t, r, r.Use(handler))

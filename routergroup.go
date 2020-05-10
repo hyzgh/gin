@@ -11,6 +11,12 @@ import (
 	"strings"
 )
 
+// hyz: IRouter, IRoutes, RouterGroup 各自的作用是啥？ Todo
+// IRouter, IRoutes是interface, RouterGroup是struct
+// IRouter 包含 IRoutes
+// RouterGroup实现了IRouter
+// RouterGroup 是Gin最顶层数据结构Engine的一个成员，而RouterGroup里面也有*Engine作为成员
+
 // IRouter defines all router handle interface includes single and group router.
 type IRouter interface {
 	IRoutes
@@ -45,6 +51,7 @@ type RouterGroup struct {
 	root     bool
 }
 
+// hyz: 作用是什么？ Todo
 var _ IRouter = &RouterGroup{}
 
 // Use adds middleware to the group, see example code in GitHub.
@@ -95,6 +102,10 @@ func (group *RouterGroup) Handle(httpMethod, relativePath string, handlers ...Ha
 
 // POST is a shortcut for router.Handle("POST", path, handle).
 func (group *RouterGroup) POST(relativePath string, handlers ...HandlerFunc) IRoutes {
+	// hyz:
+	// 多用官方package定义的常量，优于自己直接写
+	// 比如，http.MethodPost 优于 "POST"
+	// 虽然从作用上看两者是一样的，但是前者的可读性、可维护性等更好，另外根据Go的向后兼容保证，几乎可以不用担心官方package出错
 	return group.handle(http.MethodPost, relativePath, handlers)
 }
 
@@ -210,8 +221,10 @@ func (group *RouterGroup) createStaticHandler(relativePath string, fs http.FileS
 func (group *RouterGroup) combineHandlers(handlers HandlersChain) HandlersChain {
 	finalSize := len(group.Handlers) + len(handlers)
 	if finalSize >= int(abortIndex) {
+		// hyz: 当不想返回error时，也可以选择用panic来报错，panic和error都是报错的手段
 		panic("too many handlers")
 	}
+	// hyz: 使用copy，很优雅
 	mergedHandlers := make(HandlersChain, finalSize)
 	copy(mergedHandlers, group.Handlers)
 	copy(mergedHandlers[len(group.Handlers):], handlers)
