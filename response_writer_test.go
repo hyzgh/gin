@@ -17,6 +17,7 @@ import (
 // func (w *responseWriter) CloseNotify() <-chan bool {
 // func (w *responseWriter) Flush() {
 
+// hyz: 验证实现了这些接口
 var _ ResponseWriter = &responseWriter{}
 var _ http.ResponseWriter = &responseWriter{}
 var _ http.ResponseWriter = ResponseWriter(&responseWriter{})
