@@ -32,7 +32,9 @@ func Recovery() HandlerFunc {
 }
 
 // RecoveryWithWriter returns a middleware for a given writer that recovers from any panics and writes a 500 if there was one.
+// hyz: 通过输出到io.Writer提高了灵活性
 func RecoveryWithWriter(out io.Writer) HandlerFunc {
+	// hyz: 使用的是官方log包
 	var logger *log.Logger
 	if out != nil {
 		logger = log.New(out, "\n\n\x1b[31m", log.LstdFlags)
@@ -45,6 +47,7 @@ func RecoveryWithWriter(out io.Writer) HandlerFunc {
 				var brokenPipe bool
 				if ne, ok := err.(*net.OpError); ok {
 					if se, ok := ne.Err.(*os.SyscallError); ok {
+						// hyz: 原来通过字符串判断错误的方式在开源框架里面也存在，我一直觉得这种方式有点不靠谱
 						if strings.Contains(strings.ToLower(se.Error()), "broken pipe") || strings.Contains(strings.ToLower(se.Error()), "connection reset by peer") {
 							brokenPipe = true
 						}
@@ -53,14 +56,18 @@ func RecoveryWithWriter(out io.Writer) HandlerFunc {
 				if logger != nil {
 					stack := stack(3)
 					httpRequest, _ := httputil.DumpRequest(c.Request, false)
+					// hyz: 通过\r\n将header分开
 					headers := strings.Split(string(httpRequest), "\r\n")
 					for idx, header := range headers {
+						// hyz: 通过:将header的键值对分开
 						current := strings.Split(header, ":")
 						if current[0] == "Authorization" {
+							// hyz: 脱敏处理
 							headers[idx] = current[0] + ": *"
 						}
 					}
 					if brokenPipe {
+						// hyz: 可以通过logger控制颜色
 						logger.Printf("%s\n%s%s", err, string(httpRequest), reset)
 					} else if IsDebugging() {
 						logger.Printf("[Recovery] %s panic recovered:\n%s\n%s\n%s%s",
@@ -113,6 +120,7 @@ func stack(skip int) []byte {
 
 // source returns a space-trimmed slice of the n'th line.
 func source(lines [][]byte, n int) []byte {
+	// hyz: 必要的注释说明
 	n-- // in stack trace, lines are 1-indexed but our array is 0-indexed
 	if n < 0 || n >= len(lines) {
 		return dunno

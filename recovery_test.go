@@ -44,6 +44,7 @@ func TestPanicClean(t *testing.T) {
 	// TEST
 	assert.Equal(t, http.StatusBadRequest, w.Code)
 
+	// hyz: 验证成功脱敏
 	// Check the buffer does not have the secret key
 	assert.NotContains(t, buffer.String(), password)
 }
@@ -116,6 +117,7 @@ func TestPanicWithBrokenPipe(t *testing.T) {
 	const expectCode = 204
 
 	expectMsgs := map[syscall.Errno]string{
+		// hyz: borken pipe 和 connecttion reset by peer 分别对应了一个系统调用错误
 		syscall.EPIPE:      "broken pipe",
 		syscall.ECONNRESET: "connection reset by peer",
 	}
@@ -132,6 +134,7 @@ func TestPanicWithBrokenPipe(t *testing.T) {
 				c.Header("X-Test", "Value")
 				c.Status(expectCode)
 
+				// hyz: 可以这么传递系统调用错误
 				// Oops. Client connection closed
 				e := &net.OpError{Err: &os.SyscallError{Err: errno}}
 				panic(e)
