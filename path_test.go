@@ -16,6 +16,7 @@ type cleanPathTest struct {
 	path, result string
 }
 
+// hyz: 良好组织的测试样例，先看测试样例，再看实现能更好地理解源码
 var cleanTests = []cleanPathTest{
 	// Already clean
 	{"/", "/"},

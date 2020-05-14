@@ -2,6 +2,7 @@
 // Based on the path package, Copyright 2009 The Go Authors.
 // Use of this source code is governed by a BSD-style license that can be found
 // at https://github.com/julienschmidt/httprouter/blob/master/LICENSE.
+// hyz: 这个文件几乎和httprouter的path.go是一样的
 
 package gin
 
@@ -36,6 +37,7 @@ func cleanPath(p string) string {
 	//      writing to buf; w is index of next byte to write.
 
 	// path must start with '/'
+	// hyz: r, w的命名要比p1, p2强
 	r := 1
 	w := 1
 
@@ -54,7 +56,8 @@ func cleanPath(p string) string {
 
 	// A bit more clunky without a 'lazybuf' like the path package, but the loop
 	// gets completely inlined (bufApp calls).
-	// loop has no expensive function calls (except 1x make)		// So in contrast to the path package this loop has no expensive function
+	// loop has no expensive function calls (except 1x make)
+	// So in contrast to the path package this loop has no expensive function
 	// calls (except make, if needed).
 
 	for r < n {
@@ -62,6 +65,7 @@ func cleanPath(p string) string {
 		case p[r] == '/':
 			// empty path element, trailing slash is added after the end
 			r++
+			// hyz: go的switch case自带break
 
 		case p[r] == '.' && r+1 == n:
 			trailing = true
@@ -124,6 +128,7 @@ func cleanPath(p string) string {
 
 // Internal helper to lazily create a buffer if necessary.
 // Calls to this function get inlined.
+// hyz: 要修改buf的容量时，需要传指针
 func bufApp(buf *[]byte, s string, w int, c byte) {
 	b := *buf
 	if len(b) == 0 {
